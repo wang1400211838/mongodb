@@ -29,4 +29,204 @@
 
 	Model
  
-	Document
+	Document	documen是model的实例
+
+创建Schema(模式)对象
+
+var stuSchema = new Schema({
+    name  : String,
+    age   : Number,
+    gender:{
+        type:String,
+        default:'女'
+    },
+    address:String
+});
+
+通过schema创建model
+Model代表的是数据库中的集合，通过他才能对数据库进行操作
+
+
+var StuModel = mongoose.model(Modelname,Schemaname)
+
+Modelname,就是要映射的集合名字，mongoose会自动把集合名变成复数
+
+
+向数据库中插入一个文档
+
+StuModel.create(doc,function (err) {})
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+方法：
+	
+	添加:	--->	Model.create(doc(s),callback)	-->	用来创建一个文档并添加到数据库中
+			--参数：
+			doc(s)	可以是一个文档对象，也可以是一个文档对象的数组
+			callback	当操作完成以后调用的回调函数
+
+
+
+
+	查询:	--->	Model.find(conditions,[projection],[options],[callback])
+			查询所有符合条件的文档	通过find()查询的结果，返回的对象，就是document文档对象
+
+			Model.findById(id,[projection],[options],[callback])
+			根据文档的id属性查询文档
+
+			Model.findOne([conditions],[projection],[options],[callback])
+			查询符合条件的第一个文档
+
+
+			--参数：
+			conditions	查询的条件
+			projection		投影	需要获取的字段	两种方式 {name:1} ||  'name'  1代表有  0代表无
+			options		查询选项（skip  limit）
+			callback		回调函数，查询结果会通过回调函数返回	function(err,docs){}  docs就是文档
+					回调函数必须传，如果不传回调函数，压根不会查询	
+
+
+	修改	--->	Model.update(conditions,doc,[options],[callback])
+			用来修改一个或多个文档
+			
+			Model.updateMany(conditions,doc,[options],[callback])
+			修改多个
+			Model.updateOne(conditions,doc,[options],[callback])
+			修改一个
+
+	
+			--参数
+			conditions	查询的条件
+			options		查询选项（skip  limit）
+			callback		回调函数，查询结果会通过回调函数返回	function(err,docs){}  docs就是文档
+					回调函数必须传，如果不传回调函数，压根不会查询	
+			doc		修改后的对象
+
+	删除	--->	Model.remove(conditions,[callback])
+			用来删除一个或多个
+			Model.deleteOne(conditions,[callback])
+			用来删除一个
+			Model.deleteMany(conditions,[callback])
+			用来删除多个
+
+			conditions	删除的条件
+			
+			callback		回调函数，删除结果会通过回调函数返回	function(err,docs){}  docs就是文档
+					回调函数必须传，如果不传回调函数，压根不会查询	
+
+
+	统计文档数量 --->	Model.count(conditions,[callback])
+
+			conditions	条件
+			
+			callback		回调函数，删除结果会通过回调函数返回	function(err,result){} result就是结果
+					回调函数必须传，如果不传回调函数，压根不会查询	
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+document(文档)
+
+
+
+	1-->documen 和集合的文档一一对应，documen是model的实例
+
+		通过model查询到的结果都是	documen
+
+
+	创建一个document
+
+		var Models = mongoose.model(collection,Schema)
+
+		var  str = new Models({
+    			name:'张三',
+    			age:20,
+   			gender:'男',
+    			address:'四川'
+		});
+
+
+
+document方法：
+			
+	save([options],[fn])		-->	保存
+
+	equals(doc)		-->	比对字符串是否一样
+	
+	id			-->	获取id值
+
+	get(path,[type])		-->	获取文档的属性值	get(name)
+		
+	set(path,value,type)		-->	设置文档的属性值（不会修改数据库）
+
+	update(update,[options],[callback])	-->	修改对象
+
+	remove([callback])		-->	移除
+
+	isNew			-->	是不是新创建的
+	
+	isInit(path)		-->	有没有初始化
+
+	toJSON()			-->	使用方法：JSON.stringify(doc)
+
+	toObject()		-->	转换为普通的js对象，转换后所有的document方法或属性都不能使用了
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+模块化：
+	1、连接
+
+		const mongoose = require('mongoose')
+
+		mongoose.connect('mongodb://localhost/users')
+
+		mongoose.connection.once('open',(err)=>{
+    			if (!err){
+        				console.log('请开始你的表演')
+    			}
+		})；
+
+
+
+
+
+	2、模板：
+		const mongoose = require('mongoose');
+
+		const Schema = mongoose.Schema;
+
+		const stuSchema = new Schema({
+    			name:String,
+    			age:Number,
+    			gender:{
+        			type:String,
+        			default:'女'
+   			 },
+    			address:String
+			});
+
+
+		const Model = mongoose.model('student',stuSchema)
+
+		module.exports = Model
+
+	3、主程序
+
+		require('./connect/common')
+		var model = require('./module/models')
+
+		model.find({},(err,docs)=>{
+   		if (!err){
+        			console.log(docs)
+    		}
+		})
+
+			
